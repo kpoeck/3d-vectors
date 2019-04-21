@@ -78,7 +78,7 @@
     `(progn
        (declaim (ftype (function ((or vec real) (or vec real)) boolean) ,2vec-name))
        (declaim (ftype (function ((or vec real) &rest (or vec real)) boolean) ,name))
-       (declaim (inline ,name ,2vec-name))
+       #-clasp (declaim (inline ,name ,2vec-name))
        (define-ofun ,2vec-name (a b)
          (%2vec-op a b ,op ,bundle ,bundle ,bundle))
        (define-ofun ,name (val &rest vals)
@@ -105,7 +105,7 @@
     `(progn
        (declaim (ftype (function ((or vec real) (or vec real)) vec) ,2vec-name))
        (declaim (ftype (function ((or vec real) &rest (or vec real)) vec) ,name))
-       (declaim (inline ,name ,2vec-name))
+       #-clasp (declaim (inline ,name ,2vec-name))
        (define-ofun ,2vec-name (a b)
          (%2vec-op a b ,op vec2 vec3 vec4))
        (define-ofun ,name (val &rest vals)
@@ -146,6 +146,7 @@
 (define-vector-constant +vy+ 0 1 0)
 (define-vector-constant +vz+ 0 0 1)
 
+#-clasp
 (declaim (inline vdistance))
 (declaim (ftype (function (vec vec) #.*float-type*) vdistance))
 (define-ofun vdistance (a b)
@@ -162,7 +163,7 @@
                            (expt (- (vy4 a) (vy4 b)) 2)
                            (expt (- (vz4 a) (vz4 b)) 2)
                            (expt (- (vw4 a) (vw4 b)) 2))))))))
-
+#-clasp
 (declaim (inline vlength))
 (declaim (ftype (function (vec) #.*float-type*) vlength))
 (define-ofun vlength (v)
@@ -177,6 +178,7 @@
                    (expt (vz4 v) 2)
                    (expt (vw4 v) 2))))))
 
+#-clasp
 (declaim (inline v2norm))
 (declaim (ftype (function (vec) #.*float-type*) v2norm))
 (define-ofun v2norm (v)
@@ -190,7 +192,7 @@
                    (expt (vy4 v) 2)
                    (expt (vz4 v) 2)
                    (expt (vw4 v) 2))))))
-
+#-clasp
 (declaim (inline v1norm))
 (declaim (ftype (function (vec) #.*float-type*) v1norm))
 (define-ofun v1norm (v)
@@ -204,7 +206,7 @@
              (abs (vy4 v))
              (abs (vz4 v))
              (abs (vw4 v))))))
-
+#-clasp
 (declaim (inline vinorm))
 (declaim (ftype (function (vec) #.*float-type*) vinorm))
 (define-ofun vinorm (v)
@@ -218,7 +220,7 @@
                (abs (vy4 v))
                (abs (vz4 v))
                (abs (vw4 v))))))
-
+#-clasp
 (declaim (inline vpnorm))
 (declaim (ftype (function (vec (real 1)) #.*float-type*) vpnorm))
 (define-ofun vpnorm (v p)
@@ -287,6 +289,7 @@
 (defmacro define-vecop (name nname op)
   (let ((2vec-name (intern* '2vec "-" name)))
     `(progn
+       #-clasp
        (declaim (inline ,name ,2vec-name))
        (declaim (ftype (function ((or vec real) &rest (or vec real)) vec) ,name))
        (declaim (ftype (function ((or vec real) (or vec real)) vec) ,2vec-name))
@@ -306,6 +309,7 @@
 (defmacro define-nvecop (name op)
   (let ((2vec-name (intern* '2vec "-" name)))
     `(progn
+       #-clasp
        (declaim (inline ,name ,2vec-name))
        (declaim (ftype (function (vec &rest (or vec real)) vec) ,name))
        (declaim (ftype (function (vec (or vec real)) vec) ,2vec-name))
@@ -332,11 +336,13 @@
 (define-nvecop nv* *)
 (define-nvecop nv/ /)
 
+#-clasp
 (declaim (inline v1+))
 (declaim (ftype (function (vec) vec) v1+))
 (define-ofun v1+ (v)
   (v+ v 1))
 
+#-clasp
 (declaim (inline v1-))
 (declaim (ftype (function (vec) vec) v1-))
 (define-ofun v1- (v)
@@ -348,6 +354,7 @@
 (defmacro vdecf (&environment env v &optional (delta 1))
   `(nv- ,v ,(ensure-float-param delta env)))
 
+#-clasp
 (declaim (inline v.))
 (declaim (ftype (function (vec vec) #.*float-type*) v.))
 (define-ofun v. (a b)
@@ -362,6 +369,7 @@
              (* (vz4 a) (vz4 b))
              (* (vw4 a) (vw4 b))))))
 
+#-clasp
 (declaim (inline vc))
 (declaim (ftype (function (vec3 vec3) vec3) vc))
 (define-ofun vc (a b)
@@ -379,46 +387,55 @@
       (v2norm a)
       (v2norm b))))
 
+#-clasp
 (declaim (inline vabs))
 (declaim (ftype (function (vec) vec) vabs))
 (define-ofun vabs (vec)
   (vapply vec abs))
 
+#-clasp
 (declaim (inline nvabs))
 (declaim (ftype (function (vec) vec) nvabs))
 (define-ofun nvabs (vec)
   (vapplyf vec abs))
 
+#-clasp
 (declaim (inline vmod))
 (declaim (ftype (function (vec real) vec) vmod))
 (define-ofun vmod (vec divisor)
   (vapply vec mod divisor divisor divisor divisor))
 
+#-clasp
 (declaim (inline nvmod))
 (declaim (ftype (function (vec real) vec) nvmod))
 (define-ofun nvmod (vec divisor)
   (vapplyf vec mod divisor divisor divisor divisor))
 
+#-clasp
 (declaim (inline vunit))
 (declaim (ftype (function (vec) vec) vunit))
 (define-ofun vunit (a)
   (v/ a (vlength a)))
 
+#-clasp
 (declaim (inline nvunit))
 (declaim (ftype (function (vec) vec) nvunit))
 (define-ofun nvunit (vec)
   (nv/ vec (vlength vec)))
 
+#-clasp
 (declaim (inline vscale))
 (declaim (ftype (function (vec real) vec) vscale))
 (define-ofun vscale (a length)
   (nv* (vunit a) length))
 
+#-clasp
 (declaim (inline nvscale))
 (declaim (ftype (function (vec real) vec) vscale))
 (define-ofun nvscale (vec length)
   (nv* (nvunit vec) length))
 
+#-clasp
 (declaim (inline vclamp))
 (declaim (ftype (function ((or vec real) vec (or vec real)) vec) vclamp))
 (define-ofun vclamp (lower vec upper)
@@ -439,6 +456,7 @@
                     (min uz (max lz (vz4 vec)))
                     (min uw (max lw (vw4 vec)))))))))
 
+#-clasp
 (declaim (inline nvclamp))
 (declaim (ftype (function ((or vec real) vec (or vec real))) nvclamp))
 (define-ofun nvclamp (lower vec upper)
@@ -459,10 +477,12 @@
                           (min uz (max lz (vz4 vec)))
                           (min uw (max lw (vw4 vec)))))))))
 
+#-clasp
 (declaim (inline lerp))
 (defun lerp (from to n)
   (+ from (* n (- to from))))
 
+#-clasp
 (declaim (inline vlerp))
 (declaim (ftype (function (vec vec (or vec real)) vec) vlerp))
 (define-ofun vlerp (from to n)
@@ -483,11 +503,13 @@
                     (lerp (vz4 from) tz nz)
                     (lerp (vw4 from) tw nw)))))))
 
+#-clasp
 (declaim (inline vlimit))
 (declaim (ftype (function (vec (or vec real)) vec) vlimit))
 (define-ofun vlimit (vec limit)
   (vclamp (- limit) vec limit))
 
+#-clasp
 (declaim (inline nvlimit))
 (declaim (ftype (function (vec (or vec real)) vec) nvlimit))
 (define-ofun nvlimit (vec limit)
@@ -507,6 +529,7 @@
                       (* (,field k) d (- 1 cos)))))
        ,@body)))
 
+#-clasp
 (declaim (inline vrot))
 (declaim (ftype (function (vec3 vec3 real) vec3) vrot))
 (define-ofun vrot (v axis phi)
@@ -612,6 +635,7 @@
           (other-type (case (length comps) (2 'vec2) (3 'vec3) (4 'vec4))))
       `(progn
          (export ',name) ;; Haha no way, I'm not writing all these into the package listing.
+         #-clasp
          (declaim (inline ,name))
          (declaim (ftype (function (vec) vec) ,name))
          (define-ofun ,name (vec)
@@ -629,7 +653,7 @@ Note that, unlike usual SETF functions that return the value you set to, this re
                                      (2 `(vec2 ,@(loop for comp in comps collect (%vec-accessor comp d))))
                                      (3 `(vec3 ,@(loop for comp in comps collect (%vec-accessor comp d))))
                                      (4 `(vec4 ,@(loop for comp in comps collect (%vec-accessor comp d)))))))))
-         
+         #-clasp
          (declaim (inline (setf ,name)))
          (declaim (ftype (function ((or ,other-type number) vec) vec) (setf ,name)))
          (define-ofun (setf ,name) (val vec)
